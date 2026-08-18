@@ -53,47 +53,64 @@ def model_info():
 
 @app.route('/api/predict', methods=['POST'])
 def predict():
-    """Make a prediction based on input features"""
-    if model is None:
-        return jsonify({'error': 'Model not loaded'}), 500
-    
     try:
+        print("=== PREDICTION REQUEST ===")
+
+        if model is None:
+            print("ERROR: Model not loaded")
+            return jsonify({'error': 'Model not loaded'}), 500
+
         data = request.get_json()
-        
+        print("Received data:", data)
+
+        if not data:
+            return jsonify({'error': 'No JSON data received'}), 400
+
         # Extract features
         sepal_length = float(data.get('sepal_length'))
         sepal_width = float(data.get('sepal_width'))
         petal_length = float(data.get('petal_length'))
         petal_width = float(data.get('petal_width'))
-        
-        # Validate ranges
-        if not (4 <= sepal_length <= 8 and 2 <= sepal_width <= 4.5 and
-                1 <= petal_length <= 7 and 0.1 <= petal_width <= 2.5):
-            return jsonify({'error': 'Input values out of typical range'}), 400
-        
-        # Make prediction
-        features = np.array([[sepal_length, sepal_width, petal_length, petal_width]])
+
+        print(
+            "Features:",
+            sepal_length,
+            sepal_width,
+            petal_length,
+            petal_width
+        )
+
+        features = np.array([[
+            sepal_length,
+            sepal_width,
+            petal_length,
+            petal_width
+        ]])
+
+        print("Making prediction...")
+
         prediction = model.predict(features)[0]
         probability = model.predict_proba(features)[0]
-        
-        # Get distances to nearest neighbors
-        distances, indices = model.kneighbors(features)
-        
+
+        print("Prediction:", prediction)
+        print("Probability:", probability)
+
         return jsonify({
-            'prediction': metadata['target_names'][prediction],
+            'prediction': metadata['target_names'][int(prediction)],
             'prediction_idx': int(prediction),
             'probability': {
-                metadata['target_names'][i]: float(probability[i]) 
+                metadata['target_names'][i]: float(probability[i])
                 for i in range(len(metadata['target_names']))
             },
             'confidence': float(max(probability) * 100)
         })
-    
-    except ValueError as e:
-        return jsonify({'error': f'Invalid input: {str(e)}'}), 400
-    except Exception as e:
-        return jsonify({'error': f'Prediction error: {str(e)}'}), 500
 
+    except Exception as e:
+        print("PREDICTION ERROR:", repr(e))
+
+        return jsonify({
+            'error': str(e)
+        }), 500
 @app.route('/api/example-data', methods=['GET'])
 def example_data():
     """Get example data for testing"""
@@ -109,10 +126,6 @@ def not_found(e):
     """Handle 404 errors"""
     return jsonify({'error': 'Resource not found'}), 404
 
-@app.errorhandler(500)
-def server_error(e):
-    """Handle 500 errors"""
-    return jsonify({'error': 'Internal server error'}), 500
 
 if __name__ == '__main__':
     if model is None:
