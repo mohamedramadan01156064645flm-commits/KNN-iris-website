@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KNN Iris Classifier - Professional ML Interface</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <!-- Navigation Header -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <span class="logo-icon">🍁</span>
+                <span>Iris Classifier</span>
+            </div>
+            <div class="nav-info">
+                <span class="badge">KNN Algorithm</span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Container -->
+    <div class="container">
+        <!-- Hero Section -->
+        <section class="hero">
+            <div class="hero-content">
+                <h1>Iris Flower Classification</h1>
+                <p>Advanced Machine Learning Model using K-Nearest Neighbors Algorithm</p>
+                <p class="subtitle">Classify iris flowers based on their physical measurements</p>
+            </div>
+        </section>
+
+        <!-- Main Content Grid -->
+        <div class="content-grid">
+            <!-- Left Column: Input Section -->
+            <div class="column input-column">
+                <div class="card">
+                    <div class="card-header">
+                        <h2>Input Measurements</h2>
+                        <p class="card-subtitle">Enter iris measurements in centimeters</p>
+                    </div>
+                    
+                    <form id="predictionForm" class="form">
+                        <!-- Sepal Length -->
+                        <div class="form-group">
+                            <label for="sepalLength">
+                                <span class="label-text">Sepal Length (cm)</span>
+                                <span class="value-display" id="sepalLengthValue">5.5</span>
+                            </label>
+                            <input 
+                                type="range" 
+                                id="sepalLength" 
+                                name="sepal_length" 
+                                min="4" 
+                                max="8" 
+                                step="0.1" 
+                                value="5.5"
+                                class="range-input"
+                            >
+                            <div class="range-labels">
+                                <span>4</span>
+                                <span>8</span>
+                            </div>
+                        </div>
+
+                        <!-- Sepal Width -->
+                        <div class="form-group">
+                            <label for="sepalWidth">
+                                <span class="label-text">Sepal Width (cm)</span>
+                                <span class="value-display" id="sepalWidthValue">3.0</span>
+                            </label>
+                            <input 
+                                type="range" 
+                                id="sepalWidth" 
+                                name="sepal_width" 
+                                min="2" 
+                                max="4.5" 
+                                step="0.1" 
+                                value="3.0"
+                                class="range-input"
+                            >
+                            <div class="range-labels">
+                                <span>2</span>
+                                <span>4.5</span>
+                            </div>
+                        </div>
+
+                        <!-- Petal Length -->
+                        <div class="form-group">
+                            <label for="petalLength">
+                                <span class="label-text">Petal Length (cm)</span>
+                                <span class="value-display" id="petalLengthValue">3.5</span>
+                            </label>
+                            <input 
+                                type="range" 
+                                id="petalLength" 
+                                name="petal_length" 
+                                min="1" 
+                                max="7" 
+                                step="0.1" 
+                                value="3.5"
+                                class="range-input"
+                            >
+                            <div class="range-labels">
+                                <span>1</span>
+                                <span>7</span>
+                            </div>
+                        </div>
+
+                        <!-- Petal Width -->
+                        <div class="form-group">
+                            <label for="petalWidth">
+                                <span class="label-text">Petal Width (cm)</span>
+                                <span class="value-display" id="petalWidthValue">1.0</span>
+                            </label>
+                            <input 
+                                type="range" 
+                                id="petalWidth" 
+                                name="petal_width" 
+                                min="0.1" 
+                                max="2.5" 
+                                step="0.1" 
+                                value="1.0"
+                                class="range-input"
+                            >
+                            <div class="range-labels">
+                                <span>0.1</span>
+                                <span>2.5</span>
+                            </div>
+                        </div>
+
+                        <!-- Buttons -->
+                        <div class="button-group">
+                            <button type="submit" class="btn btn-primary">
+                                <span>Classify</span>
+                            </button>
+                            <button type="reset" class="btn btn-secondary">
+                                <span>Reset</span>
+                            </button>
+                        </div>
+                    </form>
+
+                    <!-- Example Buttons -->
+                    <div class="examples-section">
+                        <p class="examples-title">Quick Examples:</p>
+                        <div class="examples-grid" id="examplesContainer">
+                            <!-- Will be populated by JavaScript -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column: Results Section -->
+            <div class="column result-column">
+                <div class="card result-card" id="resultCard" style="display: none;">
+                    <div class="card-header">
+                        <h2>Classification Result</h2>
+                    </div>
+                    
+                    <!-- Main Prediction -->
+                    <div class="prediction-box" id="predictionBox">
+                        <div class="prediction-icon" id="predictionIcon">🌸</div>
+                        <div class="prediction-text">
+                            <p class="prediction-label">Predicted Class:</p>
+                            <p class="prediction-class" id="predictionClass">-</p>
+                        </div>
+                    </div>
+
+                    <div class="flower-preview-card">
+                        <img id="flowerImage" src="https://images.unsplash.com/photo-1468327768560-75b778cbb551?auto=format&fit=crop&w=1000&q=80" alt="Iris flower preview">
+                        <div class="flower-caption">
+                            <span id="flowerCaption">Iris Flower</span>
+                        </div>
+                    </div>
+
+                    <!-- Confidence Score -->
+                    <div class="confidence-section">
+                        <p class="confidence-label">Confidence Score:</p>
+                        <div class="confidence-bar-wrapper">
+                            <div class="confidence-bar">
+                                <div class="confidence-fill" id="confidenceFill" style="width: 0%"></div>
+                            </div>
+                            <p class="confidence-value" id="confidenceValue">0%</p>
+                        </div>
+                    </div>
+
+                    <!-- Probability Distribution -->
+                    <div class="probabilities-section">
+                        <p class="probabilities-label">Class Probabilities:</p>
+                        <div class="probability-bars" id="probabilityBars">
+                            <!-- Will be populated by JavaScript -->
+                        </div>
+                    </div>
+
+                    <!-- Information Panel -->
+                    <div class="info-panel">
+                        <p class="info-title">About This Prediction</p>
+                        <div class="info-content">
+                            <p><strong>Algorithm:</strong> K-Nearest Neighbors (k=11)</p>
+                            <p><strong>Dataset:</strong> Iris Flower Dataset</p>
+                            <p><strong>Features:</strong> 4 (Sepal/Petal measurements)</p>
+                            <p><strong>Classes:</strong> 3 (Setosa, Versicolor, Virginica)</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Loading State -->
+                <div class="card result-card loading-card" id="loadingCard" style="display: none;">
+                    <div class="loader"></div>
+                    <p>Classifying...</p>
+                </div>
+
+                <!-- Initial State -->
+                <div class="card result-card welcome-card" id="welcomeCard" style="display: flex;">
+                    <div class="welcome-icon">📊</div>
+                    <p class="welcome-text">Adjust the measurements and click "Classify" to predict the iris species</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Information Section -->
+        <section class="info-section">
+            <h2>About the Model</h2>
+            <div class="info-grid">
+                <div class="info-box">
+                    <h3>🤖 Algorithm</h3>
+                    <p>K-Nearest Neighbors is a simple yet effective classification algorithm that assigns a data point to the class of its k nearest neighbors.</p>
+                </div>
+                <div class="info-box">
+                    <h3>📈 Dataset</h3>
+                    <p>The Iris dataset contains 150 samples of iris flowers with 4 features and 3 species: Setosa, Versicolor, and Virginica.</p>
+                </div>
+                <div class="info-box">
+                    <h3>🎯 Features</h3>
+                    <p>Sepal Length, Sepal Width, Petal Length, and Petal Width - all measured in centimeters.</p>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>&copy;  Iris Classification ML Model | Powered by Flask + scikit-learn |</p>
+        <p>&copy;  | Developed By Mohamed Ramadan |</p>
+    </footer>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
