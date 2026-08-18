@@ -12,10 +12,11 @@ CORS(app)
 
 # Get the directory where this script is located
 APP_DIR = os.path.dirname(os.path.abspath(__file__))
+BASE_DIR = os.path.dirname(APP_DIR)
 
 # Load model and metadata
-MODEL_PATH = os.path.join(APP_DIR, 'knn_model.joblib')
-METADATA_PATH = os.path.join(APP_DIR, 'model_metadata.joblib')
+MODEL_PATH = os.path.join(BASE_DIR, 'knn_model.joblib')
+METADATA_PATH = os.path.join(BASE_DIR, 'model_metadata.joblib')
 
 def load_model():
     """Load the trained KNN model"""
