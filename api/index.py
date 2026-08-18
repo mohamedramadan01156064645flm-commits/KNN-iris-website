@@ -1,13 +1,19 @@
 """
 Flask web application for KNN Iris Classifier
 """
-from flask import Flask, render_template, request, jsonify
+import os
+from flask import Flask, request, jsonify, render_template
 from flask_cors import CORS
 import joblib
-import numpy as np
-import os
 
-app = Flask(__name__)
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+app = Flask(
+    __name__,
+    template_folder=os.path.join(BASE_DIR, 'templates'),
+    static_folder=os.path.join(BASE_DIR, 'static')
+)
+
 CORS(app)
 
 # Get the directory where this script is located
